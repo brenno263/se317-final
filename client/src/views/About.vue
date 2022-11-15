@@ -1,0 +1,9 @@
+<script setup lang="ts">
+
+</script>
+
+<template>
+	<div class="home">
+		<h1>About</h1>
+	</div>
+</template>
