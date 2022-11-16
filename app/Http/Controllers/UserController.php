@@ -34,11 +34,11 @@ class UserController extends Controller
         if(Auth::attempt($validated)) {
             $request->session()->regenerate();
 
-            return redirect()->intended(route('user.dashboard', ['id' => Auth::user()->id]));
+            return redirect()->intended(route('dashboard'));
         }
 
         return back()->withErrors([
-            'email' => 'No user found with that username & password',
+            'email' => 'No users found with that username & password',
         ])->onlyInput('email');
     }
 
@@ -50,6 +50,6 @@ class UserController extends Controller
     }
 
     public function dashboard(User $user) {
-        return view('user.dashboard', ['user', $user]);
+        return view('users.dashboard', ['user' => $user]);
     }
 }

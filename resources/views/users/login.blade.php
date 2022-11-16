@@ -1,7 +1,7 @@
 @extends('layout')
 
 @section('content')
-    <div class="row justify-content-center mt-sm-3">
+    <div class="row justify-content-center my-sm-5">
         <div class="col-sm-8">
             <div class="card">
                 <div class="card-header">Login</div>
@@ -42,12 +42,16 @@
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-primary">Register</button>
+                        <div class="row justify-content-center">
+                            <div class="col-lg-6">
+                                <button type="submit" class="btn btn-primary w-100">Log In</button>
+                            </div>
+                        </div>
                     </form>
                 </div>
             </div>
             <div class="d-flex justify-content-center">
-                <span class="text-muted">Already have an account? <a href="{{ url('/register') }}">Login</a></span>
+                <span class="text-muted">Don't have an account? <a href="{{ url('/register') }}">Register</a></span>
             </div>
         </div>
     </div>

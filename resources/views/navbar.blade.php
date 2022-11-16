@@ -1,15 +1,17 @@
 <nav class="navbar navbar-expand-sm navbar-light bg-light">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#">Image Gallery</a>
+        <a class="navbar-brand" href="{{ route('landing') }}">Image Gallery</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-sm-0">
+                @if($user = auth()->user())
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="#">Home</a>
+                    <a class="nav-link active" aria-current="page" href="{{ route('dashboard', ['users' => $user]) }}">Dashboard</a>
                 </li>
+                @endif
                 {{--                <li class="nav-item dropdown">--}}
                 {{--                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">--}}
                 {{--                        Dropdown--}}
@@ -25,13 +27,14 @@
 
             <div class="d-flex">
 
-                @if(!auth()->guest())
+                @if(auth()->user())
                     <a class="text-muted" href="{{ route('logout') }}">Log Out</a>
                 @else
                     <a class="text-muted" href="{{ route('login') }}">Log In</a>
+                @endif
             </div>
 
-            @endif
+
             {{--            <form class="d-flex">--}}
             {{--                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">--}}
             {{--                <button class="btn btn-outline-success" type="submit">Search</button>--}}

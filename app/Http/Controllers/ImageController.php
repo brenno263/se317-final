@@ -5,9 +5,18 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreImageRequest;
 use App\Http\Requests\UpdateImageRequest;
 use App\Models\Image;
+use Illuminate\Support\Facades\Auth;
 
 class ImageController extends Controller
 {
+    protected $user;
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+        $this->user = Auth::user();
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -25,7 +34,7 @@ class ImageController extends Controller
      */
     public function create()
     {
-        //
+        return view('images.create', ['user' => Auth::user()]);
     }
 
     /**

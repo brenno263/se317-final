@@ -12,13 +12,32 @@
     <style>
         body {
             font-family: 'Nunito', sans-serif;
+            background-color: #2d3748;
         }
     </style>
 </head>
-<body class="antialiased">
+<body class="antialiased bg-dark">
 @include('navbar')
-<div class="container">
+<div class="bg-light container p-3 border-top border-bottom border-primary border-5 ">
     @yield('content')
+</div>
+<div class="container p-3 bg-secondary" style="position: relative" id="footer">
+    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus adipisci alias commodi consequatur cupiditate deserunt est exercitationem explicabo magni minus, nam numquam officia quae quam quo ratione recusandae repudiandae veritatis!</p>
+    <script>
+        //This adds a rounded bottom to the footer IF it's not pressed up against the bottom of the window.
+        let footer = document.getElementById('footer');
+        let setBottom = () => {
+            let docHeight = document.body.scrollHeight;
+            let windowHeight = window.innerHeight;
+            if(docHeight < windowHeight) {
+                footer.classList.add('rounded-bottom');
+            } else {
+                footer.classList.remove('rounded-bottom');
+            }
+        }
+        setBottom()
+        window.onresize = setBottom;
+    </script>
 </div>
 </body>
 </html>

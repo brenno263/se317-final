@@ -1,7 +1,7 @@
 @extends('layout')
 
 @section('content')
-    <div class="row justify-content-center mt-sm-3">
+    <div class="row justify-content-center my-sm-5">
         <div class="col-sm-8">
             <div class="card">
                 <div class="card-header">Register</div>
@@ -69,7 +69,11 @@
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-primary">Register</button>
+                        <div class="row justify-content-center">
+                            <div class="col-lg-6">
+                                <button type="submit" class="btn btn-primary form-control">Register</button>
+                            </div>
+                        </div>
                     </form>
                 </div>
             </div>
