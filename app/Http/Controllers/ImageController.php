@@ -2,17 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreImageRequest;
-use App\Http\Requests\UpdateImageRequest;
 use App\Models\Image;
-use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\File;
 use Imagick;
+use ImagickException;
 use ImagickPixel;
+use Illuminate\Http\Request;
 
 class ImageController extends Controller
 {
@@ -39,22 +38,30 @@ class ImageController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param StoreImageRequest $request
+     * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(StoreImageRequest $request)
+    public function store(Request $request)
     {
         $validated = $request->validate([
             'title' => ['string', 'required', 'max:255'],
             'description' => ['string', 'max: 4096'],
             'public' => ['required'],
-            'image' => ['required',
-                File::image()->max(8 * 1024) //limit to 8 MiB
-                ->dimensions(Rule::dimensions()->maxWidth(2048)->maxHeight(2048))
+            'image' => [
+                'required',
+                File::image()
+                    ->max(8 * 1024) //limit to 8 MiB
+                    ->dimensions(
+                        Rule::dimensions()->maxWidth(2048)->maxHeight(2048)
+                    ),
             ],
         ]);
 
-        $imageHash = $this->uploadImage($validated['image']);
+        try {
+            $imageHash = $this->uploadImage($validated['image']);
+        } catch (ImagickException $_) {
+            return back()->withErrors('Failed to save image. Try again later or contact an administrator');
+        }
 
         $image = new Image();
         $image->title = $validated['title'];
@@ -92,11 +99,11 @@ class ImageController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param UpdateImageRequest $request
+     * @param Request $request
      * @param Image $image
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateImageRequest $request, Image $image)
+    public function update(Request $request, Image $image)
     {
         //
     }
