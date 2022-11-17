@@ -39,6 +39,6 @@ class Image extends Model
     }
 
     public static function buildPath(string $imageHash, bool $thumbnail = false) {
-        return 'images/' . $imageHash  . ($thumbnail ? '_thumb.jpg' : '.png');
+        return 'images/' . $imageHash  . ($thumbnail ? '_thumb.jpg' : '.jpg');
     }
 }

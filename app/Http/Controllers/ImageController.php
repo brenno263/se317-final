@@ -55,7 +55,7 @@ class ImageController extends Controller
                 File::image()
                     ->max(8 * 1024) //limit to 8 MiB
                     ->dimensions(
-                        Rule::dimensions()->maxWidth(2048)->maxHeight(2048)
+                        Rule::dimensions()->maxWidth(10_000)->maxHeight(10_000)
                     ),
             ],
         ]);

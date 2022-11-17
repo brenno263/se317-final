@@ -38,7 +38,7 @@ class UserController extends Controller
         }
 
         return back()->withErrors([
-            'email' => 'No users found with that username & password',
+            'email' => 'No users found with that email & password',
         ])->onlyInput('email');
     }
 

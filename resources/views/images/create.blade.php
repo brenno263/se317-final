@@ -9,28 +9,18 @@
                     <form method="POST" action="{{ route('images.store') }}" enctype="multipart/form-data">
                         @csrf
 
-                        @if ($errors->any())
-                            <div class="alert alert-danger">
-                                <ul>
-                                    @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        @endif
-
                         <div class="row mb-3">
                             <label for="title"
                                    class="col-lg-4 col-form-label text-lg-end">Title*</label>
 
                             <div class="col-lg-6">
-                                <input id="title" type="text" class="form-control @error('email') is-invalid @enderror"
-                                       name="title" value="{{ old('email') }}" required>
+                                <input id="title" type="text" class="form-control @error('title') is-invalid @enderror"
+                                       name="title" value="{{ old('title') }}" required>
 
                                 @error('title')
                                 <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
-                                    </span>
+                                </span>
                                 @enderror
                             </div>
                         </div>
@@ -38,7 +28,13 @@
                         <div class="row mb-3">
                             <label for="image" class="col-lg-4 col-form-label text-lg-end">Upload</label>
                             <div class="col-lg-6">
-                                <input id="image" type="file" class="form-control" name="image">
+                                <input id="image" type="file" class="form-control @error('image') is-invalid @enderror" name="image">
+
+                                @error('image')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
                             </div>
                         </div>
 
@@ -46,12 +42,15 @@
                             <label for="description" class="col-lg-4 col-form-label text-lg-end">Description</label>
 
                             <div class="col-lg-6">
-                                <textarea id="description" class="form-control" name="description" rows="3"></textarea>
+                                <textarea id="description"
+                                          class="form-control @error('description') is-invalid @enderror"
+                                          name="description" rows="3"
+                                >{{old('description')}}</textarea>
 
                                 @error('description')
                                 <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
-                                    </span>
+                                </span>
                                 @enderror
                             </div>
                         </div>
@@ -61,7 +60,7 @@
 
                             <div class="col-lg-6 d-inline-flex align-content-center">
                                 <input id="public" type="checkbox" class="form-check-input my-auto" name="public"
-                                       checked>
+                                       checked="{{ old('public') }}">
                             </div>
                         </div>
 
