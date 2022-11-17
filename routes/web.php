@@ -46,6 +46,8 @@ Route::middleware(['auth'])->group(function() {
     Route::resource('images', ImageController::class)->only(['create', 'store']);
     //All other routes can be taken for another user (some may require admin), so they include a user ID in their routes.
     Route::resource('users.images', ImageController::class)->only(['index', 'show', 'edit', 'update', 'destroy'])->scoped();
+    //Add a route for a confirmation page before we properly destroy an image.
+    Route::get('/users/{user}/images/{image}/destroy-confirm', [ImageController::class, 'destroyConfirm'])->name('users.images.destroy-confirm');
 });
 
 

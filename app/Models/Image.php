@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Image extends Model
 {
@@ -22,15 +23,22 @@ class Image extends Model
     }
 
     public function asset(bool $thumbnail = false) {
-        return asset('storage/'.Image::buildPath($this->hash, $this->user_id, $thumbnail));
+        return asset('storage/'.$this->build_path($thumbnail));
     }
 
     public function thumb() {
         return $this->asset(true);
     }
 
-    public static function buildPath(string $imageHash, int $userId, bool $thumbnail = false) {
-        $userHash = substr(md5($userId), 16);
-        return 'images/' . $userHash . '/' . $imageHash  . ($thumbnail ? '_thumb.jpg' : '.png');
+    public function storage_path(bool $thumbnail = false) {
+        return 'public/' . $this->build_path($thumbnail);
+    }
+
+    public function build_path(bool $thumbnail = false) {
+        return Image::buildPath($this->hash, $thumbnail);
+    }
+
+    public static function buildPath(string $imageHash, bool $thumbnail = false) {
+        return 'images/' . $imageHash  . ($thumbnail ? '_thumb.jpg' : '.png');
     }
 }
