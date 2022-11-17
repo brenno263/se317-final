@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Image;
 use App\Models\User;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -29,7 +31,7 @@ class ImageController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Contracts\View\View
+     * @return View
      */
     public function create()
     {
@@ -47,7 +49,7 @@ class ImageController extends Controller
         $validated = $request->validate([
             'title' => ['string', 'required', 'max:255'],
             'description' => ['string', 'nullable', 'max: 4096'],
-            'public' => ['required'],
+            'public' => ['nullable'],
             'image' => [
                 'required',
                 File::image()
@@ -67,7 +69,7 @@ class ImageController extends Controller
         $image = new Image();
         $image->title = $validated['title'];
         $image->description = $validated['description'] ?: "No description...";
-        $image->public = $validated['public'] == 'on';
+        $image->public = isset($validated['public']) && $validated['public'] == 'on';
         $image->hash = $imageHash;
 
         Auth::user()->images()->save($image);
@@ -78,8 +80,9 @@ class ImageController extends Controller
     /**
      * Display the specified resource.
      *
+     * @param User $user
      * @param Image $image
-     * @return \Illuminate\Contracts\View\View
+     * @return View
      */
     public function show(User $user, Image $image)
     {
@@ -92,49 +95,88 @@ class ImageController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
+     * @param User $user
      * @param Image $image
-     * @return \Illuminate\Http\Response
+     * @return View
      */
     public function edit(User $user, Image $image)
     {
-        //
+
+        return view('images.edit', ['user' => $user, 'image' => $image]);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param Request $request
+     * @param User $user
      * @param Image $image
-     * @return \Illuminate\Http\Response
+     * @return RedirectResponse
      */
     public function update(Request $request, User $user, Image $image)
     {
-        //
+        $validated = $request->validate([
+            'title' => ['string', 'required', 'max:255'],
+            'description' => ['string', 'nullable', 'max: 4096'],
+            'public' => ['nullable'],
+        ]);
+
+        $image->title = $validated['title'];
+        $image->description = $validated['description'] ?: "No description...";
+        $image->public = isset($validated['public']) && $validated['public'] == 'on';
+
+        $image->save();
+
+        return redirect()->route('users.images.show', ['user' => $user, 'image' => $image]);
+    }
+
+    /**
+     * @param User $user
+     * @param Image $image
+     * @return View
+     */
+    public function destroyConfirm(User $user, Image $image)
+    {
+        return view('images.destroy-confirm', ['user' => $user, 'image' => $image]);
     }
 
     /**
      * Remove the specified resource from storage.
      *
+     * @param Request $request
+     * @param User $user
      * @param Image $image
-     * @return \Illuminate\Http\Response
+     * @return RedirectResponse
      */
-    public function destroy(User $user, Image $image)
+    public function destroy(Request $request, User $user, Image $image)
     {
-        //
+        $request->validate([
+            'obliterate' => 'accepted',
+        ]);
+
+        //Since we store images by hashes, we can store duplicate images in the same file.
+        //If there's another image out there with the same hash, don't delete these files - they're still being used
+        if(Image::query()->where('hash', $image->hash)->where('id', '!=', $image->id)->doesntExist()) {
+            $this->deleteImage($image);
+        }
+
+        $image->delete();
+
+        return redirect()->route('dashboard');
     }
 
     /**
      * @param UploadedFile $upload
      * @return string hash of the image, which should be stored in the database.
-     * @throws \ImagickException
+     * @throws ImagickException
      */
     public function uploadImage(UploadedFile $upload): string
     {
         $uploadPath = $upload->getRealPath();
         $imageHash = md5_file($uploadPath);
 
-        $originalPath = Image::buildPath($imageHash, Auth::user()->id, false);
-        $thumbPath = Image::buildPath($imageHash, Auth::user()->id, true);
+        $originalPath = Image::buildPath($imageHash, false);
+        $thumbPath = Image::buildPath($imageHash, true);
         $storagePath = Storage::path('public');
         if (!is_dir($storagePath)) {
             mkdir(dirname($storagePath), 0777, true);
@@ -163,5 +205,15 @@ class ImageController extends Controller
         $imagick->destroy();
 
         return $imageHash;
+    }
+
+    public function deleteImage(Image $image)
+    {
+        $originalPath = $image->storage_path();
+        $thumbPath = $image->storage_path(true);
+        Storage::delete([
+            $originalPath,
+            $thumbPath,
+        ]);
     }
 }
