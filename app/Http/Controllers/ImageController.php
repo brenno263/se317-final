@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Image;
+use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -28,7 +29,7 @@ class ImageController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function create()
     {
@@ -45,7 +46,7 @@ class ImageController extends Controller
     {
         $validated = $request->validate([
             'title' => ['string', 'required', 'max:255'],
-            'description' => ['string', 'max: 4096'],
+            'description' => ['string', 'nullable', 'max: 4096'],
             'public' => ['required'],
             'image' => [
                 'required',
@@ -65,7 +66,7 @@ class ImageController extends Controller
 
         $image = new Image();
         $image->title = $validated['title'];
-        $image->description = $validated['description'];
+        $image->description = $validated['description'] ?: "No description...";
         $image->public = $validated['public'] == 'on';
         $image->hash = $imageHash;
 
@@ -78,11 +79,14 @@ class ImageController extends Controller
      * Display the specified resource.
      *
      * @param Image $image
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
-    public function show(Image $image)
+    public function show(User $user, Image $image)
     {
-        //
+        return view('images.show', [
+            'user' => $user,
+            'image' => $image,
+        ]);
     }
 
     /**
@@ -91,7 +95,7 @@ class ImageController extends Controller
      * @param Image $image
      * @return \Illuminate\Http\Response
      */
-    public function edit(Image $image)
+    public function edit(User $user, Image $image)
     {
         //
     }
@@ -103,7 +107,7 @@ class ImageController extends Controller
      * @param Image $image
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Image $image)
+    public function update(Request $request, User $user, Image $image)
     {
         //
     }
@@ -114,7 +118,7 @@ class ImageController extends Controller
      * @param Image $image
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Image $image)
+    public function destroy(User $user, Image $image)
     {
         //
     }

@@ -24,19 +24,21 @@
 <div class="container p-3 bg-secondary" style="position: relative" id="footer">
     <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus adipisci alias commodi consequatur cupiditate deserunt est exercitationem explicabo magni minus, nam numquam officia quae quam quo ratione recusandae repudiandae veritatis!</p>
     <script>
-        //This adds a rounded bottom to the footer IF it's not pressed up against the bottom of the window.
-        let footer = document.getElementById('footer');
-        let setBottom = () => {
-            let docHeight = document.body.scrollHeight;
-            let windowHeight = window.innerHeight;
-            if(docHeight < windowHeight) {
-                footer.classList.add('rounded-bottom');
-            } else {
-                footer.classList.remove('rounded-bottom');
+        window.onload = () => {
+            //This adds a rounded bottom to the footer IF it's not pressed up against the bottom of the window.
+            let footer = document.getElementById('footer');
+            let setBottom = () => {
+                let docHeight = document.body.scrollHeight;
+                let windowHeight = window.innerHeight;
+                if (docHeight < windowHeight) {
+                    footer.classList.add('rounded-bottom');
+                } else {
+                    footer.classList.remove('rounded-bottom');
+                }
             }
+            setBottom()
+            window.onresize = setBottom;
         }
-        setBottom()
-        window.onresize = setBottom;
     </script>
 </div>
 </body>
