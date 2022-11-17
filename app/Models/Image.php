@@ -9,6 +9,9 @@ class Image extends Model
 {
     use HasFactory;
 
+    const THUMB_HEIGHT = 400;
+    const THUMB_WIDTH = 400;
+
     protected $fillable = [
         'title',
         'description',

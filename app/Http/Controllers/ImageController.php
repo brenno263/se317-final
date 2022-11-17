@@ -145,12 +145,12 @@ class ImageController extends Controller
         Storage::put('public/' . $originalPath, $imagick->getImageBlob());
 
         $imagick->setCompressionQuality(70);
-        $imagick->resizeImage(256, 256, Imagick::FILTER_LANCZOS, 1, true);
+        $imagick->resizeImage(Image::THUMB_WIDTH, Image::THUMB_HEIGHT, Imagick::FILTER_LANCZOS, 1, true);
         $geometry = $imagick->getImageGeometry();
         $width = $geometry['width'];
         $height = $geometry['height'];
-        $thumb_width = 255;
-        $thumb_height = 255;
+        $thumb_width = Image::THUMB_WIDTH;
+        $thumb_height = Image::THUMB_HEIGHT;
         $thumb_x = ($width - $thumb_width) / 2;
         $thumb_y = ($height - $thumb_height) / 2;
         $imagick->extentImage($thumb_width, $thumb_height, $thumb_x, $thumb_y);
