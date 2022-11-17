@@ -12,11 +12,11 @@
                         @method("DELETE")
                         @csrf
 
-                        <div class="row justify-content-center mb-sm-4">
-                            <img class="img-fluid w-50" src="{{ $image->thumb() }}" alt="{{ $image->title }}">
+                        <div class="row justify-content-center mb-sm-4 mb-2">
+                            <img class="img-fluid col-xxl-5 col-lg-6 col-sm-8 col-10" src="{{ $image->thumb() }}" alt="{{ $image->title }}">
                         </div>
 
-                        <div class="alert alert-danger">
+                        <div class="alert alert-danger mx-sm-4">
                             Are you really sure you want to DESTROY this image? It'll seriously be gone forever!
                         </div>
 
