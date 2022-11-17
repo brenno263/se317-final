@@ -42,7 +42,10 @@ Route::get('/logout', [UserController::class, 'logout'])->name('logout');
 Route::middleware(['auth'])->group(function() {
     //View the current user's dashboard or images
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
-    Route::resource('images', ImageController::class)->scoped();
+    //Image creating and storing are root routes, as user can be gleaned from auth.
+    Route::resource('images', ImageController::class)->only(['create', 'store']);
+    //All other routes can be taken for another user (some may require admin), so they include a user ID in their routes.
+    Route::resource('users.images', ImageController::class)->only(['index', 'show', 'edit', 'update', 'destroy'])->scoped();
 });
 
 

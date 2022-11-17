@@ -13,7 +13,7 @@ class DashboardController extends Controller
         /** @var User $user */
         $user = Auth::user();
 
-        $recent_images = $user->images()->orderBy('created_at')->limit(5)->get();
+        $recent_images = $user->images()->orderByDesc('created_at')->limit(12)->get();
 
         return view('users.dashboard', [
             'user' => $user,
