@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ImageController;
+use App\Http\Controllers\LandingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,7 +29,8 @@ use App\Http\Controllers\ImageController;
  * GET             users/{users}/edit ... users.edit › UserController@edit
  */
 
-Route::view('/','landing')->name('landing');
+Route::get('/',LandingController::class)->name('landing');
+Route::get('/images', [ImageController::class, 'publicIndex'])->name('images.public-index');
 
 Route::view('/register', 'users.register')->name('register');
 Route::post('/register', [UserController::class, 'create'])->name('users.create');
@@ -41,7 +43,7 @@ Route::get('/logout', [UserController::class, 'logout'])->name('logout');
 //These routes require authorization to access
 Route::middleware(['auth'])->group(function() {
     //View the current user's dashboard or images
-    Route::get('/dashboard', DashboardController::class)->name('dashboard');
+    Route::get('/dashboard', [ImageController::class, 'dashboard'])->name('dashboard');
     //Image creating and storing are root routes, as user can be gleaned from auth.
     Route::resource('images', ImageController::class)->only(['create', 'store']);
     //All other routes can be taken for another user (some may require admin), so they include a user ID in their routes.

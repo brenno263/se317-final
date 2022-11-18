@@ -19,15 +19,38 @@ use Illuminate\Http\Request;
 class ImageController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of images for a specific user.
      *
      * @param User $user
      * @return View
      */
     public function index(User $user)
     {
-        $paginator = $user->images()->where('public', true)->paginate(4);
+        $images = $user->images();
+        if(Auth::user()->id != $user->id) {
+            $images = $images->where('public', true);
+        }
+        $paginator = $images->paginate(8);
         return view('images.index', ['user' => $user, 'paginator' => $paginator]);
+    }
+
+    public function publicIndex()
+    {
+        $paginator = Image::query()->where('public', true)->paginate(8);
+        return view('images.public-index', ['paginator' => $paginator]);
+    }
+
+    public function dashboard()
+    {
+        /** @var User $user */
+        $user = Auth::user();
+
+        $recent_images = $user->images()->orderByDesc('created_at')->limit(12)->get();
+
+        return view('users.dashboard', [
+            'user' => $user,
+            'recent_images' => $recent_images
+        ]);
     }
 
     /**

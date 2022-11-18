@@ -1,3 +1,5 @@
+{{ $imagePaginator->links() }}
+
 <div class="table-responsive">
     <table class="table table-bordered table-striped align-middle">
         <thead>
@@ -14,9 +16,9 @@
         @foreach($imagePaginator as $image)
             <tr>
                 @if($showUsername)
-                    <td>{{ $image->user->name }}</td>
+                    <td class="text-break" style="min-width: 80px">{{ $image->user->name }}</td>
                 @endif
-                <td>{{ $image->title }}</td>
+                <td class="text-break" style="min-width: 80px">{{ $image->title }}</td>
                 <td>
                     <div class="w-100 h-100 d-flex flex-column align-content-center gap-2">
                         <a href="{{ route('users.images.show', ['user' => $image->user, 'image' => $image]) }}" class="btn
