@@ -16,9 +16,10 @@ return new class extends Migration
         Schema::create('images', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+            $table->foreignId('user_id');
             $table->string('title');
             $table->text('description');
-            $table->string('filename');
+            $table->string('hash');
             $table->boolean('public');
         });
     }

@@ -7,4 +7,6 @@
         <a class="btn btn-success" href="{{ route('images.create') }}">Add an Image</a>
     </div>
 
+    <h4 class="mt-4">Recent Images:</h4>
+    <x-image-table :images="$recent_images"></x-image-table>
 @endsection
