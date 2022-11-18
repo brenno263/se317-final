@@ -21,11 +21,13 @@ class ImageController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param User $user
+     * @return View
      */
-    public function index()
+    public function index(User $user)
     {
-        //
+        $paginator = $user->images()->where('public', true)->paginate(4);
+        return view('images.index', ['user' => $user, 'paginator' => $paginator]);
     }
 
     /**
@@ -99,9 +101,9 @@ class ImageController extends Controller
      * @param Image $image
      * @return View
      */
-    public function edit(User $user, Image $image)
+    public function edit(Request $request, User $user, Image $image)
     {
-
+        session(['editing-from' => url()->previous()]);
         return view('images.edit', ['user' => $user, 'image' => $image]);
     }
 
@@ -127,7 +129,13 @@ class ImageController extends Controller
 
         $image->save();
 
-        return redirect()->route('users.images.show', ['user' => $user, 'image' => $image]);
+        $returnURL = session('editing-from');
+
+        if($returnURL) {
+            return redirect($returnURL);
+        } else {
+            return redirect()->route('users.images.show', ['user' => $user, 'image' => $image]);
+        }
     }
 
     /**
@@ -137,6 +145,7 @@ class ImageController extends Controller
      */
     public function destroyConfirm(User $user, Image $image)
     {
+        session(['destroying-from' => url()->previous()]);
         return view('images.destroy-confirm', ['user' => $user, 'image' => $image]);
     }
 
@@ -162,7 +171,13 @@ class ImageController extends Controller
 
         $image->delete();
 
-        return redirect()->route('dashboard');
+        $returnURL = session('destroying-from');
+
+        if($returnURL) {
+            return redirect($returnURL);
+        } else {
+            return redirect()->route('dashboard');
+        }
     }
 
     /**
