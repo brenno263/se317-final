@@ -1,5 +1,5 @@
-<div class="card overflow-hidden">
-    <div class="card-header">
+<div class="card overflow-hidden h-100">
+    <div class="card-header h-100">
         {{ $image->title }} by {{ $image->user->name }}
     </div>
     <a href="{{ route('users.images.show', ['user' => $image->user, 'image' => $image]) }}">

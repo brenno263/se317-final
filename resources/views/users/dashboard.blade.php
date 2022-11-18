@@ -8,14 +8,5 @@
     </div>
 
     <h4 class="mt-4">Recent Images:</h4>
-    <div class="container p-3">
-        <div class="row g-3">
-            @foreach($recent_images as $image)
-                <div class="col-lg-3 col-md-4 col-sm-6">
-                    <x-image-tile :image="$image"></x-image-tile>
-                </div>
-            @endforeach
-        </div>
-    </div>
-
+    <x-image-table :images="$recent_images"></x-image-table>
 @endsection
