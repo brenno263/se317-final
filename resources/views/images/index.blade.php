@@ -6,7 +6,6 @@
 
     <x-image-paginator
         :paginator="$paginator"
-        show-username
         show-controls="$showControls"
     ></x-image-paginator>
 
