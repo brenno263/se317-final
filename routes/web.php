@@ -30,7 +30,6 @@ use App\Http\Controllers\LandingController;
  */
 
 Route::get('/',LandingController::class)->name('landing');
-Route::get('/images', [ImageController::class, 'publicIndex'])->name('images.public-index');
 
 Route::view('/register', 'users.register')->name('register');
 Route::post('/register', [UserController::class, 'create'])->name('users.create');
@@ -40,14 +39,13 @@ Route::post('/login', [UserController::class, 'authenticate'])->name('authentica
 
 Route::get('/logout', [UserController::class, 'logout'])->name('logout');
 
+Route::get('/images', [ImageController::class, 'publicIndex'])->name('images.public-index');
+Route::resource('users.images', ImageController::class)->scoped();
+
 //These routes require authorization to access
 Route::middleware(['auth'])->group(function() {
     //View the current user's dashboard or images
     Route::get('/dashboard', [ImageController::class, 'dashboard'])->name('dashboard');
-    //Image creating and storing are root routes, as user can be gleaned from auth.
-    Route::resource('images', ImageController::class)->only(['create', 'store']);
-    //All other routes can be taken for another user (some may require admin), so they include a user ID in their routes.
-    Route::resource('users.images', ImageController::class)->only(['index', 'show', 'edit', 'update', 'destroy'])->scoped();
     //Add a route for a confirmation page before we properly destroy an image.
     Route::get('/users/{user}/images/{image}/destroy-confirm', [ImageController::class, 'destroyConfirm'])->name('users.images.destroy-confirm');
 });
