@@ -6,7 +6,7 @@
             <div class="card">
                 <div class="card-header">Create an Image</div>
                 <div class="card-body">
-                    <form method="POST" action="{{ route('images.store') }}" enctype="multipart/form-data">
+                    <form method="POST" action="{{ route('users.images.store', ['user' => $user]) }}" enctype="multipart/form-data">
                         @csrf
 
                         <div class="row mb-3">
