@@ -37,7 +37,7 @@ class ImageController extends Controller
         if(!Auth::user() || Auth::user()->id != $user->id) {
             $images = $images->where('public', true);
         }
-        $paginator = $images->paginate(8);
+        $paginator = $images->orderByDesc('created_at')->paginate(8);
         return view('images.index', ['user' => $user, 'paginator' => $paginator]);
     }
 
@@ -116,7 +116,7 @@ class ImageController extends Controller
     {
         //Authorization requires the user to be logged in. Only authorize if it's not a public image.
         if(!$image->public) $this->authorize('view', $image);
-        
+
         return view('images.show', [
             'user' => $user,
             'image' => $image,
