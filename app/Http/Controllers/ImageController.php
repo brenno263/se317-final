@@ -49,7 +49,6 @@ class ImageController extends Controller
      */
     public function publicIndex()
     {
-        $this->authorize('viewAllPublic');
         $paginator = Image::query()->where('public', true)->paginate(8);
         return view('images.public-index', ['paginator' => $paginator]);
     }

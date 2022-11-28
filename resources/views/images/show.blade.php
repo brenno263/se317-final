@@ -29,7 +29,7 @@
                 </div>
                 <div class="card-body d-flex flex-column justify-content-between">
                     <p class="h-auto align-text-top">{{ $image->description }}</p>
-                    <a class="text-muted align-text-bottom mb-0">{{ $user->name }}</a>
+                    <a class="text-muted align-text-bottom mb-0" href="{{ route('users.images.index', ['user' => $user]) }}">{{ $user->name }}</a>
                 </div>
             </div>
 

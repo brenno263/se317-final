@@ -21,7 +21,9 @@
                 @foreach($imagePaginator as $image)
                     <tr>
                         @if($showUsername)
-                            <td class="text-break" style="min-width: 80px">{{ $image->user->name }}</td>
+                            <td class="text-break" style="min-width: 80px">
+                                <a class="link-primary" href="{{ route('users.images.index', ['user' => $image->user]) }}">{{ $image->user->name }}</a>
+                            </td>
                         @endif
                         <td class="text-break w-100" style="min-width: 80px">{{ $image->title }}</td>
                         @if($showControls)
@@ -39,7 +41,7 @@
                                 </div>
                             </td>
                         @endif
-                        <td style="padding: 1px" >
+                        <td style="padding: 1px">
                             <a href="{{ route('users.images.show', ['user' => $image->user, 'image' => $image]) }}">
                                 <img src="{{ $image->thumb() }}" alt="{{ $image->title }}"
                                      height="180px">

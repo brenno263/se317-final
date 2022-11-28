@@ -41,16 +41,4 @@ Route::get('/logout', [UserController::class, 'logout'])->name('logout');
 
 Route::get('/images', [ImageController::class, 'publicIndex'])->name('images.public-index');
 Route::resource('users.images', ImageController::class)->scoped();
-
-//These routes require authorization to access
-Route::middleware(['auth'])->group(function() {
-    //View the current user's dashboard or images
-    Route::get('/dashboard', [ImageController::class, 'dashboard'])->name('dashboard');
-    //Add a route for a confirmation page before we properly destroy an image.
-    Route::get('/users/{user}/images/{image}/destroy-confirm', [ImageController::class, 'destroyConfirm'])->name('users.images.destroy-confirm');
-});
-
-
-
-
-//Route::resource('/userss', UserController::class);
+Route::get('/users/{user}/images/{image}/destroy-confirm', [ImageController::class, 'destroyConfirm'])->name('users.images.destroy-confirm');

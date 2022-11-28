@@ -11,6 +11,10 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-sm-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page"
+                       href="{{ route('images.public-index') }}">Public Gallery</a>
+                </li>
                 @if($authorizedUser)
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page"
