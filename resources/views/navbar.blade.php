@@ -14,7 +14,7 @@
                 @if($authorizedUser)
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page"
-                           href="{{ route('dashboard', ['users' => $authorizedUser]) }}">Dashboard</a>
+                           href="{{ route('users.images.index', ['user' => $authorizedUser]) }}">My Images</a>
                     </li>
                 @endif
             </ul>

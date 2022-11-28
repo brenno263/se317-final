@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Image;
 use App\Models\User;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\UploadedFile;
@@ -18,6 +19,12 @@ use Illuminate\Http\Request;
 
 class ImageController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth', ['except' => ['publicIndex', 'index', 'show']]);
+    }
+
     /**
      * Display a listing of images for a specific user.
      *
@@ -27,30 +34,24 @@ class ImageController extends Controller
     public function index(User $user)
     {
         $images = $user->images();
-        if(Auth::user()->id != $user->id) {
+        if(!Auth::user() || Auth::user()->id != $user->id) {
             $images = $images->where('public', true);
         }
-        $paginator = $images->paginate(8);
+        $paginator = $images->orderByDesc('created_at')->paginate(8);
         return view('images.index', ['user' => $user, 'paginator' => $paginator]);
     }
 
+    /**
+     * Display a listing of images for all users
+     *
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|View
+     * @throws AuthorizationException
+     */
     public function publicIndex()
     {
+        $this->authorize('viewAllPublic');
         $paginator = Image::query()->where('public', true)->paginate(8);
         return view('images.public-index', ['paginator' => $paginator]);
-    }
-
-    public function dashboard()
-    {
-        /** @var User $user */
-        $user = Auth::user();
-
-        $recent_images = $user->images()->orderByDesc('created_at')->limit(12)->get();
-
-        return view('users.dashboard', [
-            'user' => $user,
-            'recent_images' => $recent_images
-        ]);
     }
 
     /**
@@ -58,18 +59,19 @@ class ImageController extends Controller
      *
      * @return View
      */
-    public function create()
+    public function create(User $user)
     {
-        return view('images.create', ['user' => Auth::user()]);
+        return view('images.create', ['user' => $user]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @param User $user
+     * @return RedirectResponse
      */
-    public function store(Request $request)
+    public function store(Request $request, User $user)
     {
         $validated = $request->validate([
             'title' => ['string', 'required', 'max:255'],
@@ -99,7 +101,7 @@ class ImageController extends Controller
 
         Auth::user()->images()->save($image);
 
-        return redirect()->route('dashboard');
+        return redirect()->route('users.images.index', ['user' => $user]);
     }
 
     /**
@@ -108,9 +110,13 @@ class ImageController extends Controller
      * @param User $user
      * @param Image $image
      * @return View
+     * @throws AuthorizationException
      */
     public function show(User $user, Image $image)
     {
+        //Authorization requires the user to be logged in. Only authorize if it's not a public image.
+        if(!$image->public) $this->authorize('view', $image);
+
         return view('images.show', [
             'user' => $user,
             'image' => $image,
@@ -124,9 +130,8 @@ class ImageController extends Controller
      * @param Image $image
      * @return View
      */
-    public function edit(Request $request, User $user, Image $image)
+    public function edit(User $user, Image $image)
     {
-        session(['editing-from' => url()->previous()]);
         return view('images.edit', ['user' => $user, 'image' => $image]);
     }
 
@@ -137,9 +142,12 @@ class ImageController extends Controller
      * @param User $user
      * @param Image $image
      * @return RedirectResponse
+     * @throws AuthorizationException
      */
     public function update(Request $request, User $user, Image $image)
     {
+        $this->authorize('update', $image);
+
         $validated = $request->validate([
             'title' => ['string', 'required', 'max:255'],
             'description' => ['string', 'nullable', 'max: 4096'],
@@ -152,13 +160,7 @@ class ImageController extends Controller
 
         $image->save();
 
-        $returnURL = session('editing-from');
-
-        if($returnURL) {
-            return redirect($returnURL);
-        } else {
-            return redirect()->route('users.images.show', ['user' => $user, 'image' => $image]);
-        }
+        return redirect()->route('users.images.show', ['user' => $user, 'image' => $image]);
     }
 
     /**
@@ -168,7 +170,6 @@ class ImageController extends Controller
      */
     public function destroyConfirm(User $user, Image $image)
     {
-        session(['destroying-from' => url()->previous()]);
         return view('images.destroy-confirm', ['user' => $user, 'image' => $image]);
     }
 
@@ -179,28 +180,26 @@ class ImageController extends Controller
      * @param User $user
      * @param Image $image
      * @return RedirectResponse
+     * @throws AuthorizationException
      */
     public function destroy(Request $request, User $user, Image $image)
     {
+        $this->authorize('delete', $image);
+
         $request->validate([
             'obliterate' => 'accepted',
         ]);
 
         //Since we store images by hashes, we can store duplicate images in the same file.
-        //If there's another image out there with the same hash, don't delete these files - they're still being used
-        if(Image::query()->where('hash', $image->hash)->where('id', '!=', $image->id)->doesntExist()) {
+        //If there's another image out there with the same hash, don't delete these files - they're still being used.
+        //TODO: put this in a hook so it happens automatically on resource deletion.
+        if (Image::query()->where('hash', $image->hash)->where('id', '!=', $image->id)->doesntExist()) {
             $this->deleteImage($image);
         }
 
         $image->delete();
 
-        $returnURL = session('destroying-from');
-
-        if($returnURL) {
-            return redirect($returnURL);
-        } else {
-            return redirect()->route('dashboard');
-        }
+        return redirect()->route('users.images.index', ['user' => $user]);
     }
 
     /**
