@@ -16,6 +16,8 @@ exciting features.
 - Edit one of your own images
 - Delete one of your images (perish the thought!)
 
+Currently, the site can be accessed publicly at [Qrimby.com](http://se317.qrimby.com)
+
 ## Navigating the Repository
 
 There are a number of important destinations in the repository, and if you're unfamiliar to Laravel they won't be
