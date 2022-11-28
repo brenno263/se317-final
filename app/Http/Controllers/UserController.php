@@ -34,7 +34,7 @@ class UserController extends Controller
         if(Auth::attempt($validated)) {
             $request->session()->regenerate();
 
-            return redirect()->intended(route('dashboard'));
+            return redirect()->intended(route('users.images.index', ['user' => Auth::user()]));
         }
 
         return back()->withErrors([
@@ -47,9 +47,5 @@ class UserController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect()->route('landing');
-    }
-
-    public function dashboard(User $user) {
-        return view('users.dashboard', ['user' => $user]);
     }
 }

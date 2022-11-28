@@ -54,19 +54,6 @@ class ImageController extends Controller
         return view('images.public-index', ['paginator' => $paginator]);
     }
 
-    public function dashboard()
-    {
-        /** @var User $user */
-        $user = Auth::user();
-
-        $recent_images = $user->images()->orderByDesc('created_at')->limit(12)->get();
-
-        return view('users.dashboard', [
-            'user' => $user,
-            'recent_images' => $recent_images
-        ]);
-    }
-
     /**
      * Show the form for creating a new resource.
      *
@@ -81,9 +68,10 @@ class ImageController extends Controller
      * Store a newly created resource in storage.
      *
      * @param Request $request
+     * @param User $user
      * @return RedirectResponse
      */
-    public function store(Request $request)
+    public function store(Request $request, User $user)
     {
         $validated = $request->validate([
             'title' => ['string', 'required', 'max:255'],
@@ -113,7 +101,7 @@ class ImageController extends Controller
 
         Auth::user()->images()->save($image);
 
-        return redirect()->route('dashboard');
+        return redirect()->route('users.images.index', ['user' => $user]);
     }
 
     /**
@@ -126,7 +114,9 @@ class ImageController extends Controller
      */
     public function show(User $user, Image $image)
     {
-        $this->authorize('view', $image);
+        //Authorization requires the user to be logged in. Only authorize if it's not a public image.
+        if(!$image->public) $this->authorize('view', $image);
+        
         return view('images.show', [
             'user' => $user,
             'image' => $image,
@@ -209,7 +199,7 @@ class ImageController extends Controller
 
         $image->delete();
 
-        return redirect()->route('dashboard');
+        return redirect()->route('users.images.index', ['user' => $user]);
     }
 
     /**
