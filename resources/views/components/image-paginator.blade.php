@@ -39,7 +39,7 @@
                                 </div>
                             </td>
                         @endif
-                        <td>
+                        <td style="padding: 1px" >
                             <a href="{{ route('users.images.show', ['user' => $image->user, 'image' => $image]) }}">
                                 <img src="{{ $image->thumb() }}" alt="{{ $image->title }}"
                                      height="180px">
