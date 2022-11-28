@@ -5,6 +5,9 @@ namespace App\View\Components;
 use App\Models\Image;
 use Illuminate\View\Component;
 
+/**
+ * This component describes a single tile with an image and its title.
+ */
 class ImageTile extends Component
 {
 

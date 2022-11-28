@@ -34,14 +34,10 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be cast.
+     * Define our relationship to our many owned images.
      *
-     * @var array<string, string>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
-
     public function images()
     {
         return $this->hasMany(Image::class);
