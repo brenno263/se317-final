@@ -10,7 +10,12 @@ use Illuminate\Support\Facades\Hash;
 class UserController extends Controller
 {
 
-
+    /**
+     * Create a new user with the supplied POST data.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function create(Request $request) {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -25,6 +30,13 @@ class UserController extends Controller
         return redirect()->route('login');
     }
 
+
+    /**
+     * Log in a user using a username and password.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function authenticate(Request $request) {
         $validated = $request->validate([
             'email' => ['required', 'string','email', 'max:255'],
@@ -42,6 +54,12 @@ class UserController extends Controller
         ])->onlyInput('email');
     }
 
+    /**
+     * Log out the current user.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function logout(Request $request) {
         Auth::logout();
         $request->session()->invalidate();

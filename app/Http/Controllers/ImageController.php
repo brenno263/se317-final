@@ -20,13 +20,18 @@ use Illuminate\Http\Request;
 class ImageController extends Controller
 {
 
+    /**
+     * This method is run on construction.
+     */
     public function __construct()
     {
+        // Add the auth middleware to specified actions, requiring the user to be logged in, and redirecting to the login page otherwise.
         $this->middleware('auth', ['except' => ['publicIndex', 'index', 'show']]);
     }
 
     /**
      * Display a listing of images for a specific user.
+     * Only show public ones if we're not the owning user.
      *
      * @param User $user
      * @return View
@@ -42,10 +47,9 @@ class ImageController extends Controller
     }
 
     /**
-     * Display a listing of images for all users
+     * Display a listing of public images for all users
      *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|View
-     * @throws AuthorizationException
      */
     public function publicIndex()
     {
@@ -54,7 +58,7 @@ class ImageController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a new image.
      *
      * @return View
      */
@@ -123,7 +127,7 @@ class ImageController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Show the form for editing the specified image.
      *
      * @param User $user
      * @param Image $image
@@ -163,6 +167,8 @@ class ImageController extends Controller
     }
 
     /**
+     * Show a form confirming whether the user really wants to delete an image.
+     *
      * @param User $user
      * @param Image $image
      * @return View
@@ -202,6 +208,8 @@ class ImageController extends Controller
     }
 
     /**
+     * A helper method which processes and stores an image, given the initial uploaded file.
+     *
      * @param UploadedFile $upload
      * @return string hash of the image, which should be stored in the database.
      * @throws ImagickException
@@ -243,6 +251,12 @@ class ImageController extends Controller
         return $imageHash;
     }
 
+    /**
+     * A helper method to delete an image from storage.
+     *
+     * @param Image $image
+     * @return void
+     */
     public function deleteImage(Image $image)
     {
         $originalPath = $image->storage_path();

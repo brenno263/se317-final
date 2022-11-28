@@ -1,66 +1,79 @@
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# Image Gallery
 
-## About Laravel
+This is an image gallery website, where users can upload images and view others' images. It's jam-packed with fresh,
+exciting features.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Create an account
+- Log into that account
+- Upload images
+- Give images a title, description, and privacy setting
+- Inspect an image in a full-resolution view
+- View an index of all publicly available images
+- View an index of your own images, with handy controls
+- View an index of someone else's images (only the publicly visible ones!)
+- Edit one of your own images
+- Delete one of your images (perish the thought!)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Navigating the Repository
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+There are a number of important destinations in the repository, and if you're unfamiliar to Laravel they won't be
+immediately obvious to you. Here's a guide to help you explore the project.
 
-## Learning Laravel
+### Routes
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+`/routes/web.php`
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Routes define what urls can be accessed, and what is displayed for those urls.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Controllers
 
-## Laravel Sponsors
+`/app/http/Controllers`
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+All of our routes point to controller actions. These controllers define exactly what happens when you visit a route.
 
-### Premium Partners
+### Models
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+`app/Models`
 
-## Contributing
+Models define objects to be stored in the database. We can access data using these models through Laravel's built-in
+Eloquent ORM.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Migrations
 
-## Code of Conduct
+`database/migrations`
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Migrations specify exactly how the database is structured. They are built with up/down methods, so that each one can be
+built off the next, and rolled back if necessary.
 
-## Security Vulnerabilities
+### Views
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+`resources/views`
 
-## License
+Views are perhaps the most essential part of the site, they define each individual page. Laravel uses Blade templates
+for easy view composition. For instance, we have `layout.blade.php`, which defines a general site theme. All other pages
+extend this and insert their relevant content in the `content` section. Blade helps us do a lot more useful tricks too,
+like `error()` blocks, which display an element if the view is passed anything in its `$errors` array (validation
+middleware sends these automatically on rule violations).
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Policies
+
+`/app/Policies`
+
+Policies provide a great abstraction for determining if an authenticated user is allowed to do something. We just have
+one policy, `ImagePolicy.php`, which contains logic determining whether the user can view, update, or delete a given
+image. These are checked using the `$this->authorize('<action>', <image>)` method on a Controller.
+
+## Image Uploading
+
+How do we handle our image uploading? Well, we use a PHP image manipulation library called Imagick to re-encode all
+images into the jpg format for its great compression ratios to save on space. Additionally, we generate a 400x400, more
+heavily compressed copy of every image to use as a thumbnail. This way loading and listing a large number of images can
+be quick.
+
+Interestingly, the images are named by their md5 hash, so if two users upload an identical image, we'll only really
+store the one copy. Just the hash is stored in database, and we can generate all the related filepaths from just that.
+Of course, because we're using hashes there *is* a risk of hash collision. But that's pretty negligible. With some
+napkin math, we'd have about a 1-in-100-trillion chance of collision once we reach approximately
+1_000_000_000_000_000 (1 quadrilllion) images. By that point, we'd easily overwhelm the 500G of storage on the server.

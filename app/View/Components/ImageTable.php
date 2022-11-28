@@ -6,6 +6,9 @@ use App\Models\Image;
 use Illuminate\Support\Collection;
 use Illuminate\View\Component;
 
+/**
+ * This component defines a responsive grid of ImageTile components.
+ */
 class ImageTable extends Component
 {
 

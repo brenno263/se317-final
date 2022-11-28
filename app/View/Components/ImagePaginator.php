@@ -5,6 +5,9 @@ namespace App\View\Components;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\View\Component;
 
+/**
+ * This component defines a paginator view, using an Eloquent paginator of images.
+ */
 class ImagePaginator extends Component
 {
     /** @var Paginator */
@@ -29,7 +32,7 @@ class ImagePaginator extends Component
     /**
      * Get the view / contents that represent the component.
      *
-     * @return \Illuminate\Contracts\View\View|\Closure|string
+     * @return \Illuminate\Contracts\View\View
      */
     public function render()
     {
