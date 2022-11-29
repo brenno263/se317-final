@@ -26,8 +26,26 @@ class Image extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class);
+    }
+
+    protected static function booted()
+    {
+        // Register an event hook that runs just before a deletion is persisted.
+        Image::deleting(function (Image $image) {
+            // First check that no other Image model is referencing the same image in storage
+            if (Image::query()->where('hash', $image->hash)->where('id', '!=', $image->id)->doesntExist()) {
+                // Then delete with extreme prejudice
+                $originalPath = $image->storage_path();
+                $thumbPath = $image->storage_path(true);
+                Storage::delete([
+                    $originalPath,
+                    $thumbPath,
+                ]);
+            }
+        });
     }
 
     /**
@@ -36,8 +54,9 @@ class Image extends Model
      * @param bool $thumbnail
      * @return string
      */
-    public function asset(bool $thumbnail = false) {
-        return asset('storage/'.$this->build_path($thumbnail));
+    public function asset(bool $thumbnail = false)
+    {
+        return asset('storage/' . $this->build_path($thumbnail));
     }
 
     /**
@@ -45,7 +64,8 @@ class Image extends Model
      *
      * @return string
      */
-    public function thumb() {
+    public function thumb()
+    {
         return $this->asset(true);
     }
 
@@ -55,7 +75,8 @@ class Image extends Model
      * @param bool $thumbnail
      * @return string
      */
-    public function storage_path(bool $thumbnail = false) {
+    public function storage_path(bool $thumbnail = false)
+    {
         return 'public/' . $this->build_path($thumbnail);
     }
 
@@ -65,7 +86,8 @@ class Image extends Model
      * @param bool $thumbnail
      * @return string
      */
-    public function build_path(bool $thumbnail = false) {
+    public function build_path(bool $thumbnail = false)
+    {
         return Image::buildPath($this->hash, $thumbnail);
     }
 
@@ -76,7 +98,8 @@ class Image extends Model
      * @param bool $thumbnail
      * @return string
      */
-    public static function buildPath(string $imageHash, bool $thumbnail = false) {
-        return 'images/' . $imageHash  . ($thumbnail ? '_thumb.jpg' : '.jpg');
+    public static function buildPath(string $imageHash, bool $thumbnail = false)
+    {
+        return 'images/' . $imageHash . ($thumbnail ? '_thumb.jpg' : '.jpg');
     }
 }

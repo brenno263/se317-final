@@ -42,4 +42,15 @@ class User extends Authenticatable
     {
         return $this->hasMany(Image::class);
     }
+
+    protected static function booted()
+    {
+        // Register an event hook that runs just before a deletion is persisted.
+        User::deleting(function (User $user) {
+            /** @var Image $image */
+            $user->images()->each(function (Image $image) {
+                $image->delete();
+            });
+        });
+    }
 }
