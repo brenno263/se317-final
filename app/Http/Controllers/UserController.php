@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-
     /**
      * Create a new user with the supplied POST data.
      *
@@ -29,7 +28,6 @@ class UserController extends Controller
 
         return redirect()->route('login');
     }
-
 
     /**
      * Log in a user using a username and password.
@@ -64,6 +62,17 @@ class UserController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+        return redirect()->route('landing');
+    }
+
+    public function show(Request $request, User $user) {
+        $this->authorize('view', $user);
+        return view('users.show', ['user' => $user]);
+    }
+
+    public function destroy(Request $request, User $user) {
+        $this->authorize('delete', $user);
+        $user->delete();
         return redirect()->route('landing');
     }
 }

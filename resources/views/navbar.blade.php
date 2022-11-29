@@ -20,6 +20,10 @@
                         <a class="nav-link active" aria-current="page"
                            href="{{ route('users.images.index', ['user' => $authorizedUser]) }}">My Images</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page"
+                           href="{{ route('users.show', ['user' => $authorizedUser]) }}">My Account</a>
+                    </li>
                 @endif
             </ul>
 

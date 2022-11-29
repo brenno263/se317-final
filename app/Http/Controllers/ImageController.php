@@ -195,13 +195,7 @@ class ImageController extends Controller
             'obliterate' => 'accepted',
         ]);
 
-        //Since we store images by hashes, we can store duplicate images in the same file.
-        //If there's another image out there with the same hash, don't delete these files - they're still being used.
-        //TODO: put this in a hook so it happens automatically on resource deletion.
-        if (Image::query()->where('hash', $image->hash)->where('id', '!=', $image->id)->doesntExist()) {
-            $this->deleteImage($image);
-        }
-
+        // The file management is handled in an event hook, so this is safe to do.
         $image->delete();
 
         return redirect()->route('users.images.index', ['user' => $user]);
@@ -249,21 +243,5 @@ class ImageController extends Controller
         $imagick->destroy();
 
         return $imageHash;
-    }
-
-    /**
-     * A helper method to delete an image from storage.
-     *
-     * @param Image $image
-     * @return void
-     */
-    public function deleteImage(Image $image)
-    {
-        $originalPath = $image->storage_path();
-        $thumbPath = $image->storage_path(true);
-        Storage::delete([
-            $originalPath,
-            $thumbPath,
-        ]);
     }
 }

@@ -44,6 +44,10 @@ Route::post('/login', [UserController::class, 'authenticate'])->name('authentica
 // Log the user out and redirect to the landing page.
 Route::get('/logout', [UserController::class, 'logout'])->name('logout');
 
+
+Route::resource('users', UserController::class)->only(['show', 'destroy'])->scoped();
+
+
 // Show an index of ALL publicly available images.
 Route::get('/images', [ImageController::class, 'publicIndex'])->name('images.public-index');
 // Register all standard resource routes for Images. (see above for an example).
